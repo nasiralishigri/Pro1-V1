@@ -7,7 +7,7 @@ var EVMRevert = require('../helpers/EVMRevert');
 var { increaseTimeTo, duration } = require ('../helpers/increaseTime');
 var latestTime = require("../helpers/latestTime");
 const Trabic  = artifacts.require('Trabic')
-const trabicSale = artifacts.require('trabicCrowdSale')
+const trabicSale = artifacts.require('TrabicCrowdSale')
 const Web3 = require('web3')
 
  require('chai')
@@ -17,7 +17,7 @@ const Web3 = require('web3')
   // refund Vault
   const RefundVault = artifacts.require('./RefundVault');
 // console.log(latestTime.latestTime)
-contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2],value,rate){
+contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2, foundersFund, foundationFund, partnersFund],value,rate){
 
 
   before(async function() {
@@ -42,6 +42,7 @@ contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2]
 
         this.openingTime = latestTimes + duration.seconds(1);//2589000
          this.closingTime = this.openingTime + duration.seconds(8);
+         this.releaseTime = this.closingTime + duration.minutes(39);
         // console.log("Closing Time is :"+this.closingTime );
      // Token Distribution
           this.tokenSalePercentage  = 70;
@@ -58,7 +59,19 @@ contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2]
             this.icoRate = 250;
 
         this.wallet=wallet; 
-        this.trabicCrowdSale=await trabicSale.new(500,this.wallet,this.trabicToken.address,this.cap.toString(), this.openingTime, this.closingTime, this.goal);
+        this.trabicCrowdSale=await trabicSale.new(
+          500,
+          this.wallet,
+          this.trabicToken.address,
+          this.cap.toString(),
+          this.openingTime,
+          this.closingTime,
+          this.goal,
+          foundersFund,
+          foundationFund,
+          partnersFund,
+          this.releaseTime
+          );
       
 
         // Pause Token
@@ -174,7 +187,7 @@ it(' it Handle goal reached ', async function(){
    paused.should.be.false;
 
 //  Prevent Investor from Claiming refund
-await this.vault.refund(invester1, {from: invester1}).should.be.rejectedWith(EVMRevert);
+await this.trabicCrowdSale.claimRefund().should.be.rejectedWith(EVMRevert);
 
 
 })

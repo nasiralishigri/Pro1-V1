@@ -7,7 +7,7 @@ var EVMRevert = require('../helpers/EVMRevert');
 var { increaseTimeTo, duration } = require ('../helpers/increaseTime');
 var latestTime = require("../helpers/latestTime");
 const Trabic  = artifacts.require('Trabic')
-const trabicSale = artifacts.require('trabicCrowdSale')
+const trabicSale = artifacts.require('TrabicCrowdSale')
 const Web3 = require('web3')
 
  require('chai')
@@ -16,7 +16,7 @@ const Web3 = require('web3')
   .should();
 // this.trabicTokenSale;
 // console.log(latestTime.latestTime)
-contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2],value,rate){
+contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2, foundersFund, foundationFund, partnersFund],value,rate){
     //const expectedTokenAmount = rate.mul(value);
     beforeEach(async function(){
         this.name='Trabic';
@@ -34,6 +34,7 @@ contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2]
 
         this.openingTime = latestTimes + duration.seconds(10);//2589000
          this.closingTime = this.openingTime + duration.weeks(1);
+         this.releaseTime = this.closingTime + duration.days(5);
         // console.log("Closing Time is :"+this.closingTime );
      // Token Distribution
           this.tokenSalePercentage  = 70;
@@ -50,7 +51,19 @@ contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2]
             this.icoRate = 250;
 
         this.wallet=wallet; 
-        this.trabicCrowdSale=await trabicSale.new(500,this.wallet,this.trabicToken.address,this.cap.toString(), this.openingTime, this.closingTime, this.goal);
+        this.trabicCrowdSale=await trabicSale.new(
+            500,
+            this.wallet,
+            this.trabicToken.address,
+            this.cap.toString(),
+            this.openingTime,
+            this.closingTime,
+            this.goal,
+            foundersFund,
+            foundationFund,
+            partnersFund,
+            this.releaseTime
+               );
       
 
     });

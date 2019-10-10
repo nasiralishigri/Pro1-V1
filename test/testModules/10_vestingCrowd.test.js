@@ -7,7 +7,7 @@ var EVMRevert = require('../helpers/EVMRevert');
 var { increaseTimeTo, duration } = require ('../helpers/increaseTime');
 var latestTime = require("../helpers/latestTime");
 const Trabic  = artifacts.require('Trabic')
-const trabicSale = artifacts.require('trabicCrowdSale')
+const trabicSale = artifacts.require('TrabicCrowdSale')
 const Web3 = require('web3')
 
  require('chai')
@@ -18,7 +18,7 @@ const Web3 = require('web3')
   const RefundVault = artifacts.require('./RefundVault');
   const TokenTimelock = artifacts.require('./TokenTimelock');
 // console.log(latestTime.latestTime)
-contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2], foundersFund, foundationFund, partnersFund){
+contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2, foundersFund, foundationFund, partnersFund]){
     //const expectedTokenAmount = rate.mul(value);
     beforeEach(async function(){
         this.name='Trabic';
@@ -38,6 +38,7 @@ contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2]
 
         this.openingTime = latestTimes + duration.seconds(1);//2589000
          this.closingTime = this.openingTime + duration.seconds(8);
+         this.releaseTime = this.closingTime +duration.seconds(4);
         // console.log("Closing Time is :"+this.closingTime );
      // Token Distribution
           this.tokenSalePercentage  = 70;
@@ -101,6 +102,23 @@ contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2]
         setTimeout(resolve, ms);
       });
     }
+    describe('Check token Vesting after finalization', function() {
+      
+    
+    
+    beforeEach(async function () {
+      // track current wallet balance
+      this.walletBalance = await web3.eth.getBalance(wallet);
+
+      // Meet the goal
+      await this.trabicCrowdSale.buyTokens(invester1, { value: ether(26), from: invester1 });
+      await this.trabicCrowdSale.buyTokens(invester2, { value: ether(26), from: invester2 });
+      // Fastforward past end time
+      // await increaseTimeTo(this.closingTime + 1);
+      await wait(8000);
+      // Finalize the crowdsale
+      await this.trabicCrowdSale.finalize({ from: _ });
+    });
 
    
     it('handles goal reached', async function () {
@@ -204,11 +222,11 @@ contract('this is the trabic Crowdsale ',function([_,wallet,invester1,invester2]
         owner.should.equal(this.wallet);
 
         // Prevents investor from claiming refund
-        await this.vault.refund(invester1, { from: invester1 }).should.be.rejectedWith(EVMRevert);
+        await this.vault.refund(invester1, {from: invester1}).should.be.rejectedWith(EVMRevert);
       });
 
 
-
+    });
 })
 
     
