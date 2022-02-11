@@ -32,7 +32,7 @@
     "web3": "^0.20.7"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^2.3.0",
+    "@openzeppelin/contracts": "^4.4.2",
     "body-parser": "^1.18.2",
     "coinbase": "^2.0.8",
     "express": "^4.16.2",
