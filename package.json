@@ -37,7 +37,7 @@
     "coinbase": "^2.0.8",
     "express": "^4.16.2",
     "express-handlebars": "^3.1.0",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "openzeppelin-solidity": "2.3.0",
     "update": "^0.7.4"
   }
